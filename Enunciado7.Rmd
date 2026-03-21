@@ -1,0 +1,61 @@
+
+
+---
+title: "Estadística Actuarial Vida: Práctica 1"
+author: "Enunciado 7"
+output:
+  html_document:
+    number_sections: yes
+    toc: no
+    toc_depth: 0
+  pdf_document:
+    toc: no
+  word_document:
+    toc: no
+    toc_depth: '0'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+library(lifecontingencies)
+library(knitr)
+```
+
+# Apartado 1 (3 puntos).
+
+Un asegurado de 40 años contrata un seguro para que sus beneficiarios cobren una determinada cantidad de dinero en caso de que él fallezca. Calcula el APV del contrato, teniendo en cuenta las siguientes características:
+
+- periodo de cobertura de 15 años.
+- la indemnización se cobraría al final del año en que el asegurado fallece.
+- el importe de la indemnización es de 150000 euros anuales durante el primer año, y crece a razón de 5000 euros anuales hasta finalizar el quinto año de cobertura, donde alcanza el valor de 170000 euros. En los siguientes 5 años, se mantiene en los 170000 euros. Al final del onceavo año de cobertura, la indemnización es igualmente de 170000 euros y aumenta a razón de 10000 euros anuales hasta alzancar los 210000 euros al final del último año de cobertura.
+- Interés técnico: 2%
+- Tabla de vida: LIFETAB.CSV.
+
+Se valorará especialmente la brevedad del cálculo.
+
+# Apartado 2 (3.5 puntos).
+
+En el archivo TRABAJADORES.CSV se proporcionan las edades actuales y sexo de los trabajadores de una empresa y de sus conyugues (que no son trabajadores de la empresa). La empresa en la que trabajan decide suscribir una póliza de seguros por la que, en caso de fallecer cualquiera de sus trabajadores, el conyugue correspondiente, a partir de ese momento, percibe una renta vitalicia de $12.000$ euros anuales. En concreto, en caso de fallecer un trabajador de edad actual $x$ a lo largo del primer año de cobertura, el conyugue irá percibiendo la cantidad de $12.000$ euros en los momentos en los que el trabajador fallecido hubiera cumplido las edades $x+1$, $x+2$, $x+3$.. años, siempre y cuando el conyugue llegue vivo al momento en el que ha de recibir cada uno de los pagos. Contesta las siguientes preguntas:
+
+a. Para cada trabajador, calcula la probabilidad de que la aseguradora no haya tenido que pagar ninguna cantidad en concepto de rentas por ese empleado en los dos años siguientes.
+b. Al cabo de dos años, ¿cuál es el número esperado de conyugues que estarán percibiendo su renta?
+c. Al cabo de dos años, ¿cuál será la cantidad total que la aseguradora habrá dedicado al pago de las rentas, en términos esperados?
+
+Datos:
+
+- Tabla de vida: LIFETAB.CSV.
+- Género: 1 = hombre, 0 = mujer.
+
+
+# Apartado 3 (3.5 puntos).
+
+Calcula el APV de un seguro de vida que contrata una pareja de 32 años el hombre y 29 la mujer, con las siguientes características:
+
+- El periodo de cobertura es de 20 años
+- El seguro paga una indemnización al final del año en que ocurra la extinción.
+- La indemnización será de 340000 euros si la extinción ocurre durante el primer año. A partir de ese momento, el importe se irá incrementando a razón de 2700 euros anuales.
+- Interés técnico: 2%
+- Tabla de vida: LIFETAB.CSV.
