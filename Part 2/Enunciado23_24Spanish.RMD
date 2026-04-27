@@ -1,0 +1,76 @@
+---
+title: "Estadística Actuarial"
+author: "Practica 2"
+output:
+  html_document:
+    number_sections: yes
+    toc: no
+    toc_depth: 0
+  pdf_document:
+    toc: no
+  word_document:
+    toc: no
+    toc_depth: '0'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+library(knitr)
+```
+
+# Apartado 1 (3 puntos).
+
+En ATENEA descarga la base de datos que te corresponde según el listado proporcionado (basedXX.csv). Dicha base de datos contiene sólo una variable con el número de siniestros de un asegurado en un año. Ajusta una Poisson, Binomial Negativa, Poisson Cero Inflada y Poisson Zero Modificada. Esta última, se define como el producto de dos v.a. independientes, de modo que X = (1-Z)*(Y+1), donde Z es Bernouilli(prob) y Y es Poisson(lambda). Puedes utilizar el código How to define a Zero Modified Poisson distribution in R (disponible en ATENEA). Para cada distribución calcula la probabilidad de cero siniestros, así como la esperanza y varianza del número de siniestros usando los parámetros estimados. ¿Qué distribución se ajusta mejor? Razona tu respuesta.
+
+# Apartado 2 (3 puntos).
+
+Se proporciona el archivo datatime.csv (datos ficticios) que contiene datos sobre asegurados jóvenes que contratan una una póliza telemática. La base de datos datatime.csv nos proporciona información sobre el tiempo que tardan en tener su primer siniestro. Las variables son las siguientes:
+
+```{r, echo=FALSE}
+kable(data.frame(Variables= c("time","status","x1","x2","x3"), Descricion= c("tiempo transcurrido desde que contratan la póliza telemática hasta que tienen el primer siniestro, en años","0 (censura), 1 (evento)","1 = conducción urbana por encima del 25 por ciento, 0 = conducción urbana igual al 25 por ciento como máximo","1 = excesos de velocidad por encima del 8 por ciento, 0 = excesos de velocidad igual al 8 por ciento como máximo",
+"1 = uso principal del vehículo (laboral, estudios), 0 = uso principal del vehículo (ocio)")))
+```
+
+Realiza los siguientes cálculos:
+
+a) Haz una estimación de la función de supervivencia para todos los asegurados usando Kaplan y Meier. ¿Cuál es la probabilidad de que un asegurado tarde más de seis meses en tener su primer siniestro? ¿y de que tarde más de un año?
+
+b) Haz una estimación de la función de supervivencia para los diferentes grupos defindos por x1 usando Kaplan y Meier. Representa gráficamente las curvas de supervivencia. Haz un test para ver si hay diferencias significantivas en las curvas de supervivencia de ambos grupos definidos por x1. Interpreta los resultados.
+
+c) Estima un modelo de Weibull para time en función de x1, x2 y x3. Interpreta los resultados. ¿Cuál es el factor de aceleración de x1? qué interpretación tiene? A partir del modelo de Weibull estimado, calcula, para estos dos asegurados, la probabilidad de que el tiempo hasta el primer accidente sea inferior al año, así como el tiempo esperado hasta el primer accidente:
+
+```{r, echo=FALSE}
+kable(data.frame(Variables= c("x1","x2","x3"), Primer_asegurado= c("0","0","1"), Segundo_asegurado= c("0","1","1")))
+```
+
+d) Estima un modelo de Cox para time en función de x1, x2 y x3. Interpreta los resultados. 
+
+e) Utilizando el modelo de Cox que has ajustado, haz una representación de las curvas de supervivencia de los dos asegurados del apartado c). ¿Cuál sería la probabilidad de que tarden más de medio año en tener su primer siniestro?
+
+f) ¿Se cumple la hipótesis de proporcionalidad en el modelo de Cox que has ajustado? En caso de que no se cumpla, se te ocurre alguna forma de solucionar el problema? 
+
+# Apartado 3 (4 puntos).
+
+La base de datos COSTE.CSV contiene datos de costes de siniestros (variable X). Se pide: 
+
+a) Si se estableciera una franquicia ordinaria de 400 euros, ¿cuál es la media y varianza del coste de los siniestros, teniendo sólo en cuenta los casos en los que efectivamente la compañía llegua a pagar una indemnización? 
+
+b) Ajusta una distribución Gamma a los costes que hay en la base de datos COSTES.CSV, ¿crees que se ajusta bien? 
+
+c) Consideramos ahora la distribución Gamma que has ajustado en b) para el coste e imagina que se introduce una franquicia ordinaria de 400 euros a ese coste. Si tiene lugar un siniestro (del importe que sea), ¿cuál es la probabilidad de que la compañía no tenga que pagar nada?
+
+Ahora, definimos la variable excess loss Yp = (X – 400| X > 400) donde X es Gamma con los parámetros que has obtenido al hacer el ajuste del apartado a). Se pide:
+
+d) Representa la función de densidad y de distribución de X y de Yp.
+
+e) ¿Cuál es la probabilidad de que Yp esté entre 200 y 600? ¿Cómo calcularías esta probabilidad usando únicamente la función pgamma?
+
+f) Calcula el percentil 95 de Yp
+
+g) Imaginemos que la compañía también desea establecer un límite máximo a la indemnización que afecte al 5 por ciento de los siniestros más caros (teniendo en cuenta los costes originales). ¿Dónde se establecería ese límite? Será mayor, igual o menor que el valor calculado en f)? Por qué? 
+
+h) Representa gráficamente la función de distribución de Yp (excess loss con franquicia ordinaria de 400 euros), aplicando también el límite a los costes origiales que has calculado en g). Intepreta el gráfico obtenido. ¿Con qué probabilidad el valor de Yp quedará limitado por arriba?
+

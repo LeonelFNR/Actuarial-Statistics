@@ -1,0 +1,26 @@
+#definici�n de la Poisson Modificada en cero
+
+dpoisZM <- function(x, prob, lambda)prob*(x == 0) + (1-prob)*(x > 0)*dpois(x-1, lambda)
+ppoisZM <- function(q, prob, lambda)prob*(q >= 0) + (1-prob)*(q > 0)*ppois(q-1, lambda)
+
+qpoisZM <- function(p, prob, lambda)ifelse(p <= prob, 0, 1+qpois((p-prob)/(1-prob), lambda))
+rpoisZM <- function(n, prob, lambda)(1-rbinom(n, 1, prob))*(rpois(n, lambda)+1)
+
+#generamos valores poisson modificados en cero
+
+a<-data.frame(rpoisZM(1000,0.3,2))
+colnames(a, do.NULL = FALSE)
+colnames(a) <- "count"
+
+#ajustamos distribuciones
+
+library(fitdistrplus)
+library(gamlss)
+library(MASS)
+library(pscl)
+
+fpois <- fitdist(a$count, "pois")
+fnbinom <- fitdist(a$count, "nbinom")
+fpoisZI <- fitdist(a$count, "ZIP", start=list(sigma=sum(a$count == 0)/length(a$count), mu=mean(a$count)))
+fpoisZM <- fitdist(a$count, "poisZM", start=list(prob=sum(a$count == 0)/length(a$count), lambda=mean(a$count)))
+gofstat(list(fpois, fnbinom, fpoisZI, fpoisZM), chisqbreaks=c(0:5),discrete=TRUE, fitnames=c("Poisson","NegBinomial","ZI-Poisson","ZM-Poisson"))

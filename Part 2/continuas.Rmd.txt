@@ -1,0 +1,243 @@
+---
+title: "Practical exercise"
+author: "Continuous distributions for the severity of claims"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+  word_document:
+    toc: yes
+    toc_depth: '2'
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+#install.packages("insuranceData")
+#install.packages("plyr")
+#install.packages("AER")
+#install.packages("MASS")
+#install.packages("pscl")
+#install.packages("gamlss")
+#install.packages("caret")
+#install.packages("pROC")
+#install.packages("survival")
+#install.packages("knitr")
+#install.packages("VIM")
+#install.packages("lubridate")
+#install.packages("stringr")
+#install.packages("psych")
+#install.packages("MASS")
+#install.packages("VGAM")
+#install.packages("fitdistruplus")
+#install.packages("actuar")
+
+library(knitr)
+library(plyr)
+library(MASS)
+library(pscl)
+library(gamlss)
+library(survival)
+library(VIM)
+library(lubridate)
+library(stringr)
+library(psych)
+library(MASS)
+library(VGAM)
+library(fitdistrplus)
+library(actuar)
+```
+
+# Comparing the Lognormal and Gamma
+
+Compare the Lognormal(-0.5,1) and Gamma(2,2) distributions and plot the density functions.
+
+```{r, echo=TRUE}
+#Solution
+x <- seq(0,5,.01)
+y <- dlnorm(x, -1/2, 1)#mean=1, var=1.72, skew=6.18
+y2 <- dgamma(x, 2, 2) #mean=1, var=0.5, skew=1.41
+leg.txt <- c("LN(-1/2,1)","G(2,2)")
+plot(x, y, xlab="x", ylab="f(x)", main="Comparison of densities", ylim=range(y, y2), col="black", type="l")
+lines(x,y2, lty=2)
+legend("topright",leg=leg.txt, col="black",lty=1:2)
+
+```
+
+
+# Fitting an Exponential, Gamma and Inverse Gaussian
+
+For the following costs, calculate some descriptive statistics, plot a histogram and fit an Exponential, Gamma and Inverse Gaussian distributions:
+
+720,  385,  322,   312,  499, 1101, 1722,  796,  702,  398,
+301,  496,  563,  1599,  756,  396,  714, 1201,  611,  257
+
+```{r, echo=TRUE}
+#Solution
+datos<-c(720,385,322,312,499,1101,1722,796,702,398,301,496,563,1599,756,396,714,1201,611,257)
+
+summary(datos)
+hist(datos,breaks = c(300*0:8))
+
+(fitEx <- fitdistr(datos, "exponential"))
+# rate is 1/sigma in the theory
+
+(fitGm <- fitdistr(datos, "gamma"))
+# shape is alpha in the theory, and 1/rate is sigma
+
+(fitIg <- fitdist(datos, "invgauss",start=list(mean=mean(datos),shape=(mean(datos)^3)/var(datos))))
+#mean is mu and shape is lambda in the theory
+
+```
+
+# Generate Inverse Gaussian random values
+
+Perform the following calculations:
+
+a)	Generate 5000 random values Inverse Gaussian distributed with mu = 10 and lambda = 1.5. Set seed value equal to 4567. Plot them.
+b)	Fit an Inverse Gaussian to the data that you have generated.
+
+```{r, echo=TRUE}
+
+#Solution
+library(VGAM)
+set.seed(4567)
+y <- rinv.gaussian(5000, mu = 10, lambda = 1.5)
+summary(y)
+hist(y,breaks = c(10*0:40))
+yy<-as.data.frame(y)
+(fitIg2 <- fitdist(yy$y, "invgauss",start=list(mean=mean(yy$y),shape=(mean(yy$y)^3)/var(yy$y))))
+
+#alternatively, we can also use the goft package
+#install.packages("goft")
+library(goft)
+
+fitIg3<-ig_fit(yy$y)
+fitIg3
+ig_test(yy$y) #perform a test for IG distribution
+
+```
+
+# Gamma and Exponential
+
+Perform the followig calculations:
+
+a)	Generate 10000 random values with a Gamma distribution with rate = 4 and shape = 1 by using seed = 56958. 
+b)	Fit an Exponential distribution to the data. 
+c)	Check if the data have an Exponential distribution of parameter equal to 4 by using the Kolmogorov Smirnov test.
+
+```{r echo=true}
+
+#Solution
+library(MASS)
+set.seed(56958)
+
+x.gam<-rgamma(10000,rate=4,shape=1)
+hist(x.gam)
+fit1.exp <- fitdistr(x.gam, "exponential")
+fit1.exp
+ks.test(x.gam, "pexp", rate=4)
+```
+
+# Fitting a Log-normal distribution to the costs
+
+The following data correspond to 237 costs of claims (where the coverage has a limit of 300000 euros). Test if the data follows a Log-normal distribution by using the Chi-Squared test.
+
+```{r, echo=FALSE}
+
+kable(data.frame(Cost= c("0-2500","2500-7500","7500-12500","12500-17500","17500-22500","22500-32500","32500-47500","47500-67500","67500-87500","87500-125000","125000-225000","225000-300000",">300000"), Observed_frequencies= c(41,48,24,18,15,14,16,12,6,11,5,4,3), Mean= c(1389,4661,9991,15482,20232,26616,40278,56414,74985,106851,184735,264025,300000)))
+```
+
+```{r echo=true}
+#Solution
+library(MASS)
+library(vcd)
+vecc <- c(1389, 4661, 9991, 15482, 20232, 26616, 40278, 56414, 74985, 106851, 184735, 264025, 300000)
+cuts <- c(0, 2500, 7500, 12500, 17500, 22500, 32500, 47500, 67500, 87500, 125000,225000,300000)
+frec_obs <- c(41, 48, 24, 18, 15, 14, 16, 12, 5, 11, 6, 4, 3)
+frec <- rep(vecc, frec_obs)
+fitLn <- fitdistr(frec, "lognormal")
+mitjana<- fitLn$estimate[1]
+sd <- fitLn$estimate[2]
+intervals <- cut(frec, cuts)
+dist <- plnorm(cuts, mitjana, sd) #CDF of each cut
+expected_frequencies <- vector()
+for(i in 1:length(levels(intervals)))
+        expected_frequencies[i] <- (plnorm(cuts[i+1], mitjana, sd) 
+                 - plnorm(cuts[i], mitjana, sd))*length(frec)
+
+expected_frequencies <- c(expected_frequencies,(217-sum(expected_frequencies))) #expected frequency of the last interval, there are 217 claims
+expected_frequencies
+which(expected_frequencies < 5) ## positions 12 and 13
+expected_frequencies <- c(expected_frequencies[1:11], expected_frequencies[12] + expected_frequencies[13])
+
+frec_obs<-c(frec_obs[1:11], frec_obs[12]+ frec_obs[13])
+
+## Chi-Squared statistic
+X2 <- sum(((frec_obs-expected_frequencies)^2)/expected_frequencies) ## statistic
+gdl <- 12-2-1
+1 - pchisq(X2, gdl) ## p-value
+```
+
+# Simulating Gamma random values and testing model adequacy
+
+Perform the following calculations:
+
+a)	Simulate 200 random values for the cost of claims, assuming a Gamma distribution with shape = 3.5 and scale = 2, by using a seed value equal to 12543487.
+b)	Graph the data by using a histogram.
+c)	Fit a Gamma distribution to the data.
+d)	Test if the data is Gamma distributed.
+e)	Compare the observed and estimated frequencies (assuming a Gamma distribution with parameters shape and scale equals to those estimated in b) by using the intervals 0, 3, 6, 9, 12 and more than 12.
+f)	By using the same intervals, perform a Chi-Squared test to check if the data is Gamma distributed.
+
+```{r echo=true}
+
+#Solution
+
+# We have that (rate=1/scale=0.5)
+set.seed(12543487)
+x.gam<-rgamma(200,rate=0.5,shape=3.5) 
+hist(x.gam)
+
+library(MASS) 
+
+(gammFit<-fitdistr(x.gam,"gamma"))
+(s<- gammFit$estimate[1])
+(r<-gammFit$estimate[2])
+
+#if we use estimated parameters it is better to use a CVM test instead of a KS test
+
+library(goftest)
+
+cvm.test(x.gam, "pgamma", rate=r, shape=s, estimated = T)
+
+x.gam.cut<-cut(x.gam,breaks=c(0,3,6,9,12,ceiling(max(x.gam)))) 
+
+table(x.gam.cut) 
+
+## expected frequencies
+
+(es1<-round((pgamma(3,shape=s,rate=r)-pgamma(0,shape=s,rate=r))*200))
+(es2<-round((pgamma(6,shape=s,rate=r)-pgamma(3,shape=s,rate=r))*200))
+(es3<-round((pgamma(9,shape=s,rate=r)-pgamma(6,shape=s,rate=r))*200))
+(es4<-round((pgamma(12,shape=s,rate=r)-pgamma(9,shape=s,rate=r))*200))
+(es5<-200-(es1+es2+es3+es4))
+
+(f.ex<-c(es1,es2,es3,es4,es5))
+
+f.os<-vector()
+for(i in 1:5) f.os[i]<- table(x.gam.cut)[[i]] ## empirical frequencies
+f.os
+X2<-sum(((f.os-f.ex)^2)/f.ex) ## chi-square statistic
+X2
+gdl<-5-2-1 ## degrees of freedom
+1-pchisq(X2,gdl) ## p-value
+
+```

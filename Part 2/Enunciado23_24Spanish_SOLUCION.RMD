@@ -1,0 +1,718 @@
+---
+title: "Estadística Actuarial"
+author: "Practica 2 - Solución"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    number_sections: yes
+    toc: no
+    toc_depth: 0
+  word_document:
+    toc: no
+    toc_depth: '0'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+library(knitr)
+library(MASS)
+library(pscl)
+library(gamlss)
+library(VGAM)
+library(actuar)
+library(fitdistrplus)
+library(survival)
+```
+
+# Apartado 1 (3 puntos).
+
+En ATENEA descarga la base de datos que te corresponde según el listado proporcionado (basedXX.csv). Dicha base de datos contiene sólo una variable con el número de siniestros de un asegurado en un año. Ajusta una Poisson, Binomial Negativa, Poisson Cero Inflada y Poisson Zero Modificada. Esta última, se define como el producto de dos v.a. independientes, de modo que X = (1-Z)*(Y+1), donde Z es Bernouilli(prob) y Y es Poisson(lambda). Puedes utilizar el código How to define a Zero Modified Poisson distribution in R (disponible en ATENEA). Para cada distribución calcula la probabilidad de cero siniestros, así como la esperanza y varianza del número de siniestros usando los parámetros estimados. ¿Qué distribución se ajusta mejor? Razona tu respuesta.
+
+## Solución
+
+Cargamos la base `based7.csv`. Como el fichero no tiene cabecera, usamos `header = FALSE`.
+
+```{r apartado1-carga}
+based7 <- read.csv("based7.csv", header = FALSE)
+nclaims <- based7[, 1]
+
+summary(nclaims)
+table(nclaims)
+mean(nclaims)
+var(nclaims)
+```
+
+La variable representa recuentos de siniestros. Por tanto, el primer modelo natural es una Poisson. En una Poisson se cumple que
+
+\[
+E[X]=Var[X]=\lambda.
+\]
+
+Sin embargo, si la varianza muestral es mayor que la media muestral, hay indicios de sobredispersión y puede ser preferible una Binomial Negativa o un modelo con modificación en cero.
+
+## Ajuste Poisson
+
+```{r apartado1-poisson}
+lambda_pois <- mean(nclaims)
+
+prob0_pois <- dpois(0, lambda = lambda_pois)
+esp_pois <- lambda_pois
+var_pois <- lambda_pois
+
+loglik_pois <- sum(dpois(nclaims, lambda = lambda_pois, log = TRUE))
+aic_pois <- -2 * loglik_pois + 2 * 1
+
+c(lambda = lambda_pois,
+  prob0 = prob0_pois,
+  esperanza = esp_pois,
+  varianza = var_pois,
+  AIC = aic_pois)
+```
+
+## Ajuste Binomial Negativa
+
+La Binomial Negativa permite sobredispersión, ya que
+
+\[
+Var[X]=\mu + \frac{\mu^2}{size}.
+\]
+
+```{r apartado1-binomial-negativa}
+fit_nb <- fitdistr(nclaims, densfun = "negative binomial")
+fit_nb
+
+size_nb <- as.numeric(fit_nb$estimate["size"])
+mu_nb <- as.numeric(fit_nb$estimate["mu"])
+prob_nb <- size_nb / (size_nb + mu_nb)
+
+prob0_nb <- dnbinom(0, size = size_nb, mu = mu_nb)
+esp_nb <- mu_nb
+var_nb <- mu_nb + mu_nb^2 / size_nb
+
+loglik_nb <- sum(dnbinom(nclaims, size = size_nb, mu = mu_nb, log = TRUE))
+aic_nb <- -2 * loglik_nb + 2 * 2
+
+c(size = size_nb,
+  mu = mu_nb,
+  prob = prob_nb,
+  prob0 = prob0_nb,
+  esperanza = esp_nb,
+  varianza = var_nb,
+  AIC = aic_nb)
+```
+
+## Ajuste Poisson Cero Inflada
+
+El modelo Poisson cero inflado mezcla una masa adicional en cero con una Poisson:
+
+\[
+P(X=0)=\pi +(1-\pi)e^{-\lambda},
+\]
+
+\[
+E[X]=(1-\pi)\lambda.
+\]
+
+```{r apartado1-zip}
+datos_zip <- data.frame(nclaims = nclaims)
+
+fit_zip <- zeroinfl(nclaims ~ 1 | 1, data = datos_zip, dist = "poisson")
+summary(fit_zip)
+
+lambda_zip <- exp(coef(fit_zip)$count[1])
+pi_zip <- plogis(coef(fit_zip)$zero[1])
+
+prob0_zip <- pi_zip + (1 - pi_zip) * exp(-lambda_zip)
+esp_zip <- (1 - pi_zip) * lambda_zip
+var_zip <- (1 - pi_zip) * lambda_zip * (1 + pi_zip * lambda_zip)
+aic_zip <- AIC(fit_zip)
+
+c(lambda = lambda_zip,
+  pi = pi_zip,
+  prob0 = prob0_zip,
+  esperanza = esp_zip,
+  varianza = var_zip,
+  AIC = aic_zip)
+```
+
+## Ajuste Poisson Zero Modificada
+
+El enunciado define
+
+\[
+X=(1-Z)(Y+1),
+\]
+
+donde \(Z\sim Bernoulli(prob)\) y \(Y\sim Poisson(\lambda)\), independientes. Por tanto,
+
+\[
+P(X=0)=prob,
+\]
+
+\[
+E[X]=(1-prob)(\lambda+1),
+\]
+
+\[
+Var[X]=(1-prob)\lambda + prob(1-prob)(\lambda+1)^2.
+\]
+
+La función de probabilidad es:
+
+\[
+P(X=0)=prob,
+\]
+
+\[
+P(X=x)=(1-prob)P(Y=x-1), \quad x=1,2,\ldots
+\]
+
+```{r apartado1-zero-modificada}
+# Función de masa de la Poisson Zero Modificada definida en el enunciado
+# X = (1-Z)*(Y+1), Z Bernoulli(prob), Y Poisson(lambda)
+dzmpois <- function(x, lambda, prob, log = FALSE) {
+  dens <- ifelse(x == 0,
+                 prob,
+                 (1 - prob) * dpois(x - 1, lambda = lambda))
+  if (log) log(dens) else dens
+}
+
+# Log-verosimilitud negativa para optimizar
+negloglik_zm <- function(par, x) {
+  lambda <- exp(par[1])
+  prob <- plogis(par[2])
+  -sum(dzmpois(x, lambda = lambda, prob = prob, log = TRUE))
+}
+
+# Valores iniciales razonables
+prob_ini <- mean(nclaims == 0)
+lambda_ini <- max(mean(nclaims[nclaims > 0]) - 1, 0.01)
+
+fit_zm <- optim(par = c(log(lambda_ini), qlogis(prob_ini)),
+                fn = negloglik_zm,
+                x = nclaims,
+                hessian = TRUE)
+
+lambda_zm <- exp(fit_zm$par[1])
+prob_zm <- plogis(fit_zm$par[2])
+
+prob0_zm <- prob_zm
+esp_zm <- (1 - prob_zm) * (lambda_zm + 1)
+var_zm <- (1 - prob_zm) * lambda_zm + prob_zm * (1 - prob_zm) * (lambda_zm + 1)^2
+loglik_zm <- -fit_zm$value
+aic_zm <- -2 * loglik_zm + 2 * 2
+
+c(lambda = lambda_zm,
+  prob = prob_zm,
+  prob0 = prob0_zm,
+  esperanza = esp_zm,
+  varianza = var_zm,
+  AIC = aic_zm)
+```
+
+## Comparación de modelos
+
+```{r apartado1-comparacion}
+tabla_ap1 <- data.frame(
+  Modelo = c("Poisson", "Binomial Negativa", "Poisson Cero Inflada", "Poisson Zero Modificada"),
+  Probabilidad_cero = c(prob0_pois, prob0_nb, prob0_zip, prob0_zm),
+  Esperanza = c(esp_pois, esp_nb, esp_zip, esp_zm),
+  Varianza = c(var_pois, var_nb, var_zip, var_zm),
+  AIC = c(aic_pois, aic_nb, aic_zip, aic_zm)
+)
+
+kable(tabla_ap1, digits = 5)
+```
+
+La distribución que se ajusta mejor es la que presenta menor AIC. Además, debemos comparar si reproduce razonablemente la probabilidad de cero siniestros y si permite recoger la sobredispersión observada. En estos datos, la Binomial Negativa suele ser la opción más adecuada si presenta el menor AIC, ya que permite que la varianza sea mayor que la media.
+
+# Apartado 2 (3 puntos).
+
+Se proporciona el archivo datatime.csv (datos ficticios) que contiene datos sobre asegurados jóvenes que contratan una una póliza telemática. La base de datos datatime.csv nos proporciona información sobre el tiempo que tardan en tener su primer siniestro. Las variables son las siguientes:
+
+```{r, echo=FALSE}
+kable(data.frame(Variables= c("time","status","x1","x2","x3"), Descricion= c("tiempo transcurrido desde que contratan la póliza telemática hasta que tienen el primer siniestro, en años","0 (censura), 1 (evento)","1 = conducción urbana por encima del 25 por ciento, 0 = conducción urbana igual al 25 por ciento como máximo","1 = excesos de velocidad por encima del 8 por ciento, 0 = excesos de velocidad igual al 8 por ciento como máximo",
+"1 = uso principal del vehículo (laboral, estudios), 0 = uso principal del vehículo (ocio)")))
+```
+
+Realiza los siguientes cálculos:
+
+a) Haz una estimación de la función de supervivencia para todos los asegurados usando Kaplan y Meier. ¿Cuál es la probabilidad de que un asegurado tarde más de seis meses en tener su primer siniestro? ¿y de que tarde más de un año?
+
+b) Haz una estimación de la función de supervivencia para los diferentes grupos defindos por x1 usando Kaplan y Meier. Representa gráficamente las curvas de supervivencia. Haz un test para ver si hay diferencias significantivas en las curvas de supervivencia de ambos grupos definidos por x1. Interpreta los resultados.
+
+c) Estima un modelo de Weibull para time en función de x1, x2 y x3. Interpreta los resultados. ¿Cuál es el factor de aceleración de x1? qué interpretación tiene? A partir del modelo de Weibull estimado, calcula, para estos dos asegurados, la probabilidad de que el tiempo hasta el primer accidente sea inferior al año, así como el tiempo esperado hasta el primer accidente:
+
+```{r, echo=FALSE}
+kable(data.frame(Variables= c("x1","x2","x3"), Primer_asegurado= c("0","0","1"), Segundo_asegurado= c("0","1","1")))
+```
+
+d) Estima un modelo de Cox para time en función de x1, x2 y x3. Interpreta los resultados. 
+
+e) Utilizando el modelo de Cox que has ajustado, haz una representación de las curvas de supervivencia de los dos asegurados del apartado c). ¿Cuál sería la probabilidad de que tarden más de medio año en tener su primer siniestro?
+
+f) ¿Se cumple la hipótesis de proporcionalidad en el modelo de Cox que has ajustado? En caso de que no se cumpla, se te ocurre alguna forma de solucionar el problema? 
+
+## Solución
+
+```{r apartado2-carga}
+datatime <- read.csv("datatime.csv", sep = ";", dec = ",")
+
+str(datatime)
+summary(datatime)
+```
+
+## a) Kaplan-Meier global
+
+La función de supervivencia es
+
+\[
+S(t)=P(T>t).
+\]
+
+Por tanto, la probabilidad de tardar más de seis meses es \(S(0.5)\), y la probabilidad de tardar más de un año es \(S(1)\).
+
+```{r apartado2a-km-global}
+km_global <- survfit(Surv(time, status) ~ 1, data = datatime)
+km_global
+
+summary(km_global, times = c(0.5, 1))
+
+S_global <- summary(km_global, times = c(0.5, 1))$surv
+
+plot(km_global,
+     xlab = "Tiempo desde la contratación",
+     ylab = "S(t)",
+     main = "Función de supervivencia Kaplan-Meier")
+
+c(S_0.5 = S_global[1], S_1 = S_global[2])
+```
+
+La probabilidad estimada de que un asegurado tarde más de seis meses en tener el primer siniestro es `r round(S_global[1], 5)`. La probabilidad estimada de que tarde más de un año es `r round(S_global[2], 5)`.
+
+## b) Kaplan-Meier por grupos de x1 y test log-rank
+
+```{r apartado2b-km-x1}
+km_x1 <- survfit(Surv(time, status) ~ x1, data = datatime)
+summary(km_x1, times = c(0.5, 1))
+
+plot(km_x1,
+     col = c(1, 2),
+     lty = 1,
+     xlab = "Tiempo desde la contratación",
+     ylab = "S(t)",
+     main = "Kaplan-Meier por grupos de x1")
+legend("topright",
+       legend = c("x1 = 0", "x1 = 1"),
+       col = c(1, 2),
+       lty = 1)
+```
+
+Para comprobar si las curvas son significativamente distintas usamos el test log-rank:
+
+\[
+H_0: S_0(t)=S_1(t).
+\]
+
+```{r apartado2b-logrank}
+test_logrank <- survdiff(Surv(time, status) ~ x1, data = datatime)
+test_logrank
+
+p_logrank <- 1 - pchisq(test_logrank$chisq, df = length(test_logrank$n) - 1)
+p_logrank
+```
+
+Como el p-valor es `r round(p_logrank, 6)`, si es menor que 0.05 se rechaza la igualdad de curvas de supervivencia. En ese caso, hay evidencia de que el tiempo hasta el primer siniestro difiere entre los dos grupos definidos por `x1`.
+
+## c) Modelo Weibull
+
+Ajustamos un modelo Weibull AFT:
+
+\[
+\log(T)=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_3+\sigma W.
+\]
+
+```{r apartado2c-weibull}
+modelo_weibull <- survreg(Surv(time, status) ~ x1 + x2 + x3,
+                          data = datatime,
+                          dist = "weibull")
+
+summary(modelo_weibull)
+```
+
+En el modelo Weibull AFT, los coeficientes se interpretan sobre el logaritmo del tiempo. El factor de aceleración de una covariable es \(\exp(\beta)\). Si es menor que 1, acorta el tiempo hasta el siniestro; si es mayor que 1, lo alarga.
+
+```{r apartado2c-factor-aceleracion}
+factores_aceleracion <- exp(coef(modelo_weibull))
+factores_aceleracion
+
+factor_x1 <- exp(coef(modelo_weibull)["x1"])
+factor_x1
+```
+
+El factor de aceleración asociado a `x1` es `r round(factor_x1, 5)`. Esto significa que, manteniendo constantes las demás variables, pasar de `x1 = 0` a `x1 = 1` multiplica el tiempo hasta el primer siniestro por ese factor.
+
+Predicción para los dos asegurados indicados:
+
+```{r apartado2c-prediccion-weibull}
+nuevo <- data.frame(
+  x1 = c(0, 0),
+  x2 = c(0, 1),
+  x3 = c(1, 1)
+)
+
+lp_weib <- predict(modelo_weibull, newdata = nuevo, type = "lp")
+sigma_weib <- modelo_weibull$scale
+shape_weib <- 1 / sigma_weib
+scale_weib <- exp(lp_weib)
+
+prob_T_menor_1 <- pweibull(1, shape = shape_weib, scale = scale_weib)
+esperanza_T <- scale_weib * gamma(1 + 1 / shape_weib)
+
+tabla_pred_weibull <- data.frame(
+  Asegurado = c("Primer asegurado", "Segundo asegurado"),
+  x1 = nuevo$x1,
+  x2 = nuevo$x2,
+  x3 = nuevo$x3,
+  Prob_T_menor_1 = prob_T_menor_1,
+  Tiempo_esperado = esperanza_T
+)
+
+kable(tabla_pred_weibull, digits = 5)
+```
+
+## d) Modelo de Cox
+
+El modelo de Cox viene dado por
+
+\[
+h(t|x)=h_0(t)\exp(x'\beta).
+\]
+
+```{r apartado2d-cox}
+modelo_cox <- coxph(Surv(time, status) ~ x1 + x2 + x3, data = datatime)
+summary(modelo_cox)
+
+hazard_ratios <- exp(coef(modelo_cox))
+hazard_ratios
+```
+
+Un hazard ratio mayor que 1 indica que la variable aumenta el riesgo instantáneo de tener el primer siniestro. Un hazard ratio menor que 1 indica que reduce el riesgo.
+
+## e) Curvas de supervivencia de los dos asegurados con el modelo de Cox
+
+```{r apartado2e-prediccion-cox}
+sf_cox <- survfit(modelo_cox, newdata = nuevo)
+
+plot(sf_cox,
+     col = c(1, 2),
+     lty = 1,
+     xlab = "Tiempo desde la contratación",
+     ylab = "S(t)",
+     main = "Curvas de supervivencia predichas con Cox")
+legend("topright",
+       legend = c("Primer asegurado", "Segundo asegurado"),
+       col = c(1, 2),
+       lty = 1)
+
+summary(sf_cox, times = 0.5)
+S_05_cox <- summary(sf_cox, times = 0.5)$surv
+
+tabla_pred_cox <- data.frame(
+  Asegurado = c("Primer asegurado", "Segundo asegurado"),
+  Prob_T_mayor_0.5 = S_05_cox
+)
+
+kable(tabla_pred_cox, digits = 5)
+```
+
+## f) Hipótesis de proporcionalidad
+
+La hipótesis de proporcionalidad se puede comprobar con los residuos de Schoenfeld.
+
+```{r apartado2f-proporcionalidad}
+test_ph <- cox.zph(modelo_cox)
+test_ph
+plot(test_ph)
+```
+
+Si los p-valores son mayores que 0.05, no hay evidencia para rechazar la hipótesis de riesgos proporcionales. Si alguna variable incumple la hipótesis, se puede considerar una estratificación o introducir efectos dependientes del tiempo. Por ejemplo, si `x2` no cumple la hipótesis:
+
+```{r apartado2f-solucion-alternativa, eval=FALSE}
+modelo_cox_estratificado <- coxph(Surv(time, status) ~ x1 + x3 + strata(x2),
+                                  data = datatime)
+summary(modelo_cox_estratificado)
+```
+
+# Apartado 3 (4 puntos).
+
+La base de datos COSTE.CSV contiene datos de costes de siniestros (variable X). Se pide: 
+
+a) Si se estableciera una franquicia ordinaria de 400 euros, ¿cuál es la media y varianza del coste de los siniestros, teniendo sólo en cuenta los casos en los que efectivamente la compañía llegua a pagar una indemnización? 
+
+b) Ajusta una distribución Gamma a los costes que hay en la base de datos COSTES.CSV, ¿crees que se ajusta bien? 
+
+c) Consideramos ahora la distribución Gamma que has ajustado en b) para el coste e imagina que se introduce una franquicia ordinaria de 400 euros a ese coste. Si tiene lugar un siniestro (del importe que sea), ¿cuál es la probabilidad de que la compañía no tenga que pagar nada?
+
+Ahora, definimos la variable excess loss Yp = (X – 400| X > 400) donde X es Gamma con los parámetros que has obtenido al hacer el ajuste del apartado a). Se pide:
+
+d) Representa la función de densidad y de distribución de X y de Yp.
+
+e) ¿Cuál es la probabilidad de que Yp esté entre 200 y 600? ¿Cómo calcularías esta probabilidad usando únicamente la función pgamma?
+
+f) Calcula el percentil 95 de Yp
+
+g) Imaginemos que la compañía también desea establecer un límite máximo a la indemnización que afecte al 5 por ciento de los siniestros más caros (teniendo en cuenta los costes originales). ¿Dónde se establecería ese límite? Será mayor, igual o menor que el valor calculado en f)? Por qué? 
+
+h) Representa gráficamente la función de distribución de Yp (excess loss con franquicia ordinaria de 400 euros), aplicando también el límite a los costes origiales que has calculado en g). Intepreta el gráfico obtenido. ¿Con qué probabilidad el valor de Yp quedará limitado por arriba?
+
+## Solución
+
+```{r apartado3-carga}
+coste <- read.csv("coste.csv", sep = ";", dec = ",")
+X <- coste$x
+
+summary(X)
+hist(X, breaks = 30, main = "Histograma de costes", xlab = "Coste")
+```
+
+## a) Franquicia ordinaria de 400 euros
+
+Con franquicia ordinaria \(d=400\), la variable por pago es
+
+\[
+Y^P=X-d\mid X>d.
+\]
+
+```{r apartado3a}
+d <- 400
+Yp_emp <- X[X > d] - d
+
+media_Yp_emp <- mean(Yp_emp)
+var_Yp_emp <- var(Yp_emp)
+
+c(media = media_Yp_emp, varianza = var_Yp_emp)
+```
+
+La media empírica de los pagos positivos es `r round(media_Yp_emp, 4)` y la varianza empírica es `r round(var_Yp_emp, 4)`.
+
+## b) Ajuste Gamma
+
+La distribución Gamma es adecuada para costes positivos y asimétricos. Ajustamos los parámetros por máxima verosimilitud.
+
+```{r apartado3b}
+fit_gamma <- fitdistr(X, densfun = "gamma")
+fit_gamma
+
+shape_hat <- as.numeric(fit_gamma$estimate["shape"])
+rate_hat <- as.numeric(fit_gamma$estimate["rate"])
+scale_hat <- 1 / rate_hat
+
+media_gamma <- shape_hat * scale_hat
+var_gamma <- shape_hat * scale_hat^2
+
+c(shape = shape_hat,
+  rate = rate_hat,
+  scale = scale_hat,
+  media = media_gamma,
+  varianza = var_gamma)
+```
+
+Representamos el histograma junto con la densidad ajustada.
+
+```{r apartado3b-grafico}
+hist(X, breaks = 30, freq = FALSE,
+     main = "Ajuste Gamma a los costes",
+     xlab = "Coste")
+curve(dgamma(x, shape = shape_hat, rate = rate_hat),
+      add = TRUE,
+      lwd = 2)
+```
+
+Comprobamos el ajuste con el test de Kolmogorov-Smirnov.
+
+```{r apartado3b-ks}
+ks_gamma <- ks.test(X, "pgamma", shape = shape_hat, rate = rate_hat)
+ks_gamma
+```
+
+Si el p-valor es mayor que 0.05, no rechazamos que los costes procedan de una distribución Gamma. En ese caso, el ajuste Gamma puede considerarse razonable.
+
+## c) Probabilidad de no pagar nada
+
+Con franquicia ordinaria, la compañía no paga nada cuando
+
+\[
+X\leq 400.
+\]
+
+```{r apartado3c}
+prob_no_pago <- pgamma(d, shape = shape_hat, rate = rate_hat)
+prob_no_pago
+```
+
+La probabilidad estimada de no pagar nada es `r round(prob_no_pago, 5)`.
+
+## d) Densidad y distribución de X y de Yp
+
+Para la variable por pago con franquicia ordinaria,
+
+\[
+F_{Y^P}(y)=\frac{F_X(y+d)-F_X(d)}{1-F_X(d)}, \quad y>0,
+\]
+
+\[
+f_{Y^P}(y)=\frac{f_X(y+d)}{1-F_X(d)}, \quad y>0.
+\]
+
+```{r apartado3d-funciones}
+fYp <- function(y) {
+  dgamma(y + d, shape = shape_hat, rate = rate_hat) /
+    (1 - pgamma(d, shape = shape_hat, rate = rate_hat))
+}
+
+FYp <- function(y) {
+  (pgamma(y + d, shape = shape_hat, rate = rate_hat) -
+     pgamma(d, shape = shape_hat, rate = rate_hat)) /
+    (1 - pgamma(d, shape = shape_hat, rate = rate_hat))
+}
+```
+
+```{r apartado3d-graficos}
+xx <- seq(0, quantile(X, 0.995), length.out = 1000)
+yy <- seq(0, quantile(Yp_emp, 0.995), length.out = 1000)
+
+plot(xx, dgamma(xx, shape = shape_hat, rate = rate_hat),
+     type = "l",
+     xlab = "x",
+     ylab = "Densidad",
+     main = "Densidad de X")
+
+plot(xx, pgamma(xx, shape = shape_hat, rate = rate_hat),
+     type = "l",
+     xlab = "x",
+     ylab = "F_X(x)",
+     main = "Función de distribución de X")
+
+plot(yy, fYp(yy),
+     type = "l",
+     xlab = "y",
+     ylab = "Densidad",
+     main = "Densidad de Yp")
+
+plot(yy, FYp(yy),
+     type = "l",
+     xlab = "y",
+     ylab = "F_Yp(y)",
+     main = "Función de distribución de Yp")
+```
+
+## e) Probabilidad de que Yp esté entre 200 y 600
+
+Queremos calcular
+
+\[
+P(200<Y^P<600)=P(600<X<1000\mid X>400).
+\]
+
+```{r apartado3e}
+prob_Yp_200_600 <- FYp(600) - FYp(200)
+prob_Yp_200_600
+```
+
+Usando únicamente `pgamma`, la probabilidad se calcula como:
+
+```{r apartado3e-pgamma}
+prob_Yp_200_600_pgamma <-
+  (pgamma(1000, shape = shape_hat, rate = rate_hat) -
+     pgamma(600, shape = shape_hat, rate = rate_hat)) /
+  (1 - pgamma(400, shape = shape_hat, rate = rate_hat))
+
+prob_Yp_200_600_pgamma
+```
+
+## f) Percentil 95 de Yp
+
+El percentil 95 de \(Y^P\) es el valor \(q\) que cumple:
+
+\[
+F_{Y^P}(q)=0.95.
+\]
+
+```{r apartado3f}
+q95_Yp <- uniroot(function(y) FYp(y) - 0.95,
+                  interval = c(0, max(X) * 10))$root
+q95_Yp
+```
+
+El percentil 95 de la variable por pago es `r round(q95_Yp, 4)`.
+
+## g) Límite máximo que afecta al 5 por ciento de los siniestros más caros
+
+Si queremos que el límite afecte al 5 por ciento de los siniestros más caros teniendo en cuenta los costes originales, debemos calcular el percentil 95 de \(X\):
+
+```{r apartado3g}
+limite_original <- qgamma(0.95, shape = shape_hat, rate = rate_hat)
+limite_indemnizacion <- limite_original - d
+
+c(limite_original = limite_original,
+  limite_indemnizacion = limite_indemnizacion,
+  percentil95_Yp = q95_Yp)
+```
+
+El límite sobre el coste original se establecería en `r round(limite_original, 4)` euros. Si se expresa como indemnización después de la franquicia, sería `r round(limite_indemnizacion, 4)` euros.
+
+Este valor no tiene por qué coincidir exactamente con el percentil 95 de \(Y^P\), porque \(Y^P\) está condicionado a que \(X>400\), mientras que el límite de este apartado se calcula sobre todos los costes originales.
+
+## h) Distribución de Yp aplicando también límite máximo
+
+Definimos la indemnización con franquicia ordinaria y límite máximo sobre el coste original:
+
+\[
+Y_L=\min(X, L)-400 \mid X>400,
+\]
+
+con \(L\) igual al percentil 95 de los costes originales.
+
+La función de distribución coincide con la de \(Y^P\) hasta \(L-400\), y a partir de ese punto acumula una masa de probabilidad en el límite.
+
+```{r apartado3h}
+lim <- limite_original
+lim_y <- lim - d
+
+FYp_limitada <- function(y) {
+  ifelse(y < lim_y,
+         FYp(y),
+         1)
+}
+
+y_grid <- seq(0, q95_Yp * 1.3, length.out = 1000)
+
+plot(y_grid, FYp(y_grid),
+     type = "l",
+     lwd = 2,
+     xlab = "y",
+     ylab = "Función de distribución",
+     main = "Distribución de Yp con y sin límite")
+lines(y_grid, FYp_limitada(y_grid), lty = 2, lwd = 2)
+abline(v = lim_y, lty = 3)
+legend("bottomright",
+       legend = c("Yp sin límite", "Yp con límite", "Límite"),
+       lty = c(1, 2, 3),
+       lwd = c(2, 2, 1))
+
+prob_limitado_condicional <-
+  (1 - pgamma(lim, shape = shape_hat, rate = rate_hat)) /
+  (1 - pgamma(d, shape = shape_hat, rate = rate_hat))
+
+prob_limitado_original <- 1 - pgamma(lim, shape = shape_hat, rate = rate_hat)
+
+c(prob_limitado_original = prob_limitado_original,
+  prob_limitado_condicionado_a_pago = prob_limitado_condicional)
+```
+
+La probabilidad de que un coste original supere el límite es `r round(prob_limitado_original, 5)`, por construcción aproximadamente 0.05. Condicionando a que haya pago positivo, la probabilidad de que \(Y^P\) quede limitado por arriba es `r round(prob_limitado_condicional, 5)`.
