@@ -1,6 +1,6 @@
 ---
-title: "Estadística Actuarial"
-author: "Practica 2 - Solución"
+title: "Estadística Actuarial \n Práctica 2 - Solución"
+author: "Leonel Fernando Nabaza Ruibal"
 output:
   pdf_document:
     toc: no
@@ -34,7 +34,7 @@ En ATENEA descarga la base de datos que te corresponde según el listado proporc
 
 ## Solución
 
-Cargamos la base `based7.csv`. Como el fichero no tiene cabecera, usamos `header = FALSE`.
+Cargamos la base `based7.csv`.
 
 ```{r apartado1-carga}
 based7 <- read.csv("based7.csv", header = FALSE)
@@ -229,7 +229,7 @@ tabla_ap1 <- data.frame(
 kable(tabla_ap1, digits = 5)
 ```
 
-La distribución que se ajusta mejor es la que presenta menor AIC. Además, debemos comparar si reproduce razonablemente la probabilidad de cero siniestros y si permite recoger la sobredispersión observada. En estos datos, la Binomial Negativa suele ser la opción más adecuada si presenta el menor AIC, ya que permite que la varianza sea mayor que la media.
+La distribución que se ajusta mejor es la que presenta menor AIC. Además, es importante comprobar si el modelo reproduce adecuadamente la elevada proporción de ceros observada en los datos. En este caso, el modelo Poisson infraestima la probabilidad de cero siniestros, mientras que la Binomial Negativa, la Poisson cero inflada y la Poisson zero-modified proporcionan valores muy similares y más cercanos a la realidad. Entre ellos, la Binomial Negativa presenta el menor AIC y, además, permite capturar la sobredispersión observada (varianza mayor que la media), por lo que resulta el modelo más adecuado.
 
 # Apartado 2 (3 puntos).
 
@@ -276,6 +276,22 @@ S(t)=P(T>t).
 \]
 
 Por tanto, la probabilidad de tardar más de seis meses es \(S(0.5)\), y la probabilidad de tardar más de un año es \(S(1)\).
+
+## Estimación de la función de supervivencia
+
+El estimador de Kaplan-Meier permite estimar la función de supervivencia definida como:
+
+\[
+S(t) = P(T > t)
+\]
+
+Bajo censura por la derecha, el estimador de Kaplan-Meier se define como:
+
+\[
+\hat S(t) = \prod_{t_j \le t} \left(1 - \frac{d_j}{R_j}\right)
+\]
+
+donde \(d_j\) es el número de eventos en el instante \(t_j\) y \(R_j\) es el número de individuos en riesgo justo antes de \(t_j\).
 
 ```{r apartado2a-km-global}
 km_global <- survfit(Surv(time, status) ~ 1, data = datatime)
@@ -327,7 +343,7 @@ p_logrank <- 1 - pchisq(test_logrank$chisq, df = length(test_logrank$n) - 1)
 p_logrank
 ```
 
-Como el p-valor es `r round(p_logrank, 6)`, si es menor que 0.05 se rechaza la igualdad de curvas de supervivencia. En ese caso, hay evidencia de que el tiempo hasta el primer siniestro difiere entre los dos grupos definidos por `x1`.
+Como el p-valor es `r round(p_logrank, 6)`, es menor que 0.05. Por lo tanto, se rechaza la igualdad de curvas de supervivencia. En ese caso, hay evidencia de que el tiempo hasta el primer siniestro difiere entre los dos grupos definidos por `x1`.
 
 ## c) Modelo Weibull
 
@@ -355,7 +371,7 @@ factor_x1 <- exp(coef(modelo_weibull)["x1"])
 factor_x1
 ```
 
-El factor de aceleración asociado a `x1` es `r round(factor_x1, 5)`. Esto significa que, manteniendo constantes las demás variables, pasar de `x1 = 0` a `x1 = 1` multiplica el tiempo hasta el primer siniestro por ese factor.
+El factor de aceleración asociado a `x1` es `r round(factor_x1, 5)`. Esto significa que, manteniendo constantes las demás variables, pasar de `x1 = 0` a `x1 = 1` multiplica el tiempo hasta el primer siniestro por ese factor. Por lo tanto, `x1` acorta el tiempo para el primer accidente.
 
 Predicción para los dos asegurados indicados:
 
@@ -404,6 +420,12 @@ hazard_ratios
 
 Un hazard ratio mayor que 1 indica que la variable aumenta el riesgo instantáneo de tener el primer siniestro. Un hazard ratio menor que 1 indica que reduce el riesgo.
 
+Para `x1` el hazard ratio es 1.384, por lo que los asegurados con conducción urbana superior al 25% presentan un riesgo instantáneo de tener el primer siniestro aproximadamente un 38.4% mayor que aquellos con menor conducción urbana, manteniendo el resto de variables constantes.
+
+Para `x2` el hazard ratio es 5.235, lo que indica que los asegurados con exceso de velocidad superior al 8% presentan un riesgo de siniestro más de 5 veces mayor que los que no superan ese umbral. Se trata del factor con mayor impacto sobre el riesgo.
+
+Para `x3` el hazard ratio es 0.691, por lo que los asegurados cuyo uso del vehículo es laboral o de estudios presentan un riesgo de siniestro aproximadamente un 30.9% menor que aquellos que lo usan principalmente para ocio.
+
 ## e) Curvas de supervivencia de los dos asegurados con el modelo de Cox
 
 ```{r apartado2e-prediccion-cox}
@@ -440,10 +462,15 @@ test_ph <- cox.zph(modelo_cox)
 test_ph
 plot(test_ph)
 ```
+El contraste global presenta un p-valor de 0.085, por lo que no se rechaza la hipótesis de proporcionalidad al nivel del 5%.
 
-Si los p-valores son mayores que 0.05, no hay evidencia para rechazar la hipótesis de riesgos proporcionales. Si alguna variable incumple la hipótesis, se puede considerar una estratificación o introducir efectos dependientes del tiempo. Por ejemplo, si `x2` no cumple la hipótesis:
+Analizando las covariables individualmente, se observa que x1 y x3 no presentan evidencia de violación de la hipótesis, mientras que la variable x2 muestra un p-valor de 0.026, lo que sugiere una posible desviación de la proporcionalidad.
 
-```{r apartado2f-solucion-alternativa, eval=FALSE}
+Sin embargo, dado que el test global no es significativo, el modelo de Cox puede considerarse adecuado en conjunto, aunque el efecto de x2 podría variar ligeramente en el tiempo.
+
+Por otra parte, si alguna variable incumple la hipótesis, se puede considerar una estratificación o introducir efectos dependientes del tiempo. Por ejemplo, si `x2` no cumple la hipótesis:
+
+```{r apartado2f-solucion-alternativa, eval=TRUE}
 modelo_cox_estratificado <- coxph(Surv(time, status) ~ x1 + x3 + strata(x2),
                                   data = datatime)
 summary(modelo_cox_estratificado)
@@ -542,6 +569,10 @@ ks_gamma
 ```
 
 Si el p-valor es mayor que 0.05, no rechazamos que los costes procedan de una distribución Gamma. En ese caso, el ajuste Gamma puede considerarse razonable.
+
+El p-valor obtenido es 0.7307, muy superior al nivel de significación habitual del 5%, por lo que no se rechaza la hipótesis nula de que los datos siguen una distribución Gamma.
+
+Por tanto, no existe evidencia estadística para descartar el modelo Gamma, lo que indica que proporciona un buen ajuste a los datos de coste.
 
 ## c) Probabilidad de no pagar nada
 
@@ -715,5 +746,15 @@ prob_limitado_original <- 1 - pgamma(lim, shape = shape_hat, rate = rate_hat)
 c(prob_limitado_original = prob_limitado_original,
   prob_limitado_condicionado_a_pago = prob_limitado_condicional)
 ```
+El gráfico muestra la función de distribución de la variable por pago \(Y^P\) con y sin límite superior.
+
+La curva continua representa la distribución sin límite, mientras que la curva discontinua muestra la distribución cuando se introduce un límite máximo de indemnización.
+
+Se observa que ambas distribuciones coinciden hasta el valor del límite. A partir de ese punto, la distribución con límite se vuelve constante e igual a 1, lo que refleja que todas las indemnizaciones superiores al límite quedan truncadas en dicho valor.
+
+Este comportamiento implica una acumulación de probabilidad en el punto del límite, ya que todos los siniestros más grandes se agrupan en ese valor máximo. Esto reduce la variabilidad de los pagos y limita la exposición a siniestros extremos, aunque mantiene inalterada la distribución para indemnizaciones por debajo del límite.
+
+En consecuencia, la introducción del límite reduce el riesgo asociado a la cola de la distribución, lo que es especialmente relevante en la gestión del riesgo de grandes siniestros.
+
 
 La probabilidad de que un coste original supere el límite es `r round(prob_limitado_original, 5)`, por construcción aproximadamente 0.05. Condicionando a que haya pago positivo, la probabilidad de que \(Y^P\) quede limitado por arriba es `r round(prob_limitado_condicional, 5)`.

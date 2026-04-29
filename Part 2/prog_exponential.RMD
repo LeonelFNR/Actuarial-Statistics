@@ -1,0 +1,42 @@
+setwd("C:/Users/amperez/Desktop/surv")
+
+insurance <- read.table("insurance.txt", header=TRUE, dec=".")
+
+attach(insurance)
+
+#1 fit a AFT model with weibull distribution
+
+#library(survival)
+srFitE1 <-survreg(Surv(duration,delta,type="right")~poverty+smoke+alcohol+agemth+yschool, data=insurance, dist="exponential")
+summary(srFitE1)
+
+accf<-exp(-srFitE1$coefficients[3])
+accf
+
+xb<-predict(srFitE1, newdata=data.frame(poverty=0,smoke=1,alcohol=0,agemth=0,yschool=0),type="lp")
+e_rate=1/exp(xb)
+pexp(20,rate=e_rate, lower.tail = F)
+
+xb0<-predict(srFitE1, newdata=data.frame(poverty=0,smoke=0,alcohol=0,agemth=0,yschool=0),type="lp")
+e_rate=1/exp(xb0)
+pexp(20*accf,rate=e_rate, lower.tail = F)
+
+#another way how to check it
+
+s13<-predict(srFitE1, newdata=data.frame(poverty=0,smoke=1,alcohol=0,agemth=0,yschool=0),type="quantile",p=1-0.133959)
+s13
+
+s0_13<-predict(srFitE1, newdata=data.frame(poverty=0,smoke=0,alcohol=0,agemth=0,yschool=0),type="quantile",p=1-0.133959)
+s0_13
+
+s0_13/s13 #equals the acceleration factor
+
+#check expectation
+
+E_expo<-predict(srFitE1, newdata=data.frame(poverty=0,smoke=1,alcohol=1,agemth=40,yschool=16),type="response")
+E_expo
+
+xb<-predict(srFitE1, newdata=data.frame(poverty=0,smoke=1,alcohol=1,agemth=40,yschool=16),type="lp")
+e_rate=1/exp(xb)
+E2_expo=1/e_rate
+E2_expo
