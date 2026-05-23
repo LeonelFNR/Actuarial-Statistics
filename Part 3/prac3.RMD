@@ -2,12 +2,12 @@
 title: "Estadística Actuarial Practica 3"
 author: "Leonel Fernando Nabaza Ruibal"
 output:
+  pdf_document:
+    toc: no
   html_document:
     number_sections: yes
     toc: no
     toc_depth: 0
-  pdf_document:
-    toc: no
   word_document:
     toc: no
     toc_depth: '0'
@@ -191,7 +191,7 @@ AIC_{NB} = 36559.02 < AIC_{Poisson} = 36672.80.
 
 Por tanto, el modelo Binomial Negativa se considera más adecuado para modelizar la frecuencia de siniestros, ya que permite incorporar una varianza superior a la media y capturar mejor la heterogeneidad entre asegurados.
 
-Calcular ahora las disperiones para la negative binomial:
+Calcular ahora las disperiones para la Binomial Negativa:
 
 ```{r}
 disp_deviance_nb <- deviance(modelo_nb) / df.residual(modelo_nb)
@@ -200,3 +200,147 @@ disp_deviance_nb
 disp_pearson_nb
 ```
 Observamos que obtenemos valores de dispersión más controlados.
+
+Asignamos ya el modelo ganador:
+```{r}
+if (AIC(modelo_nb) < AIC(modelo_pois)) {
+  modelo_freq_final <- modelo_nb
+  nombre_modelo_freq <- "Binomial Negativa"
+} else {
+  modelo_freq_final <- modelo_pois
+  nombre_modelo_freq <- "Poisson"
+}
+
+nombre_modelo_freq
+```
+
+### Predicción de frecuencia del año siguiente
+Para calcular la prima del próximo año se predice el número esperado de siniestros suponiendo exposición anual igual a 1.
+```{r}
+datos_pred <- datos
+datos_pred$exposition <- 1
+
+datos$freq_pred <- predict(modelo_freq_final,
+                           newdata = datos_pred,
+                           type = "response")
+
+summary(datos$freq_pred)
+```
+
+## GLM para severidad de siniestros
+La severidad representa el coste medio por siniestro. Como sólo existe severidad cuando hay al menos un siniestro, se trabaja con las pólizas tales que $\verb|nbsin| > 0$. Definimos:
+$$Y_i = \frac{\text{cout}_i}{N_i}, \ \ N_i > 0.$$
+Dado que la severidad es positiva, asimétrica y con cola derecha, un modelo Gamma con enlace logarítmico es adecuado:
+$$Y_i \sim \text{Gamma}(\mu_i, \phi),$$
+$$\log{(\mu_i)} = x_i'\gamma.$$
+El enlace log permite obtener una estructura multiplicativa en los factores tarifarios.
+```{r}
+datos_sev <- subset(datos, nbsin > 0 & !is.na(cout) & cout > 0)
+
+datos_sev$severidad <- datos_sev$cout / datos_sev$nbsin
+
+summary(datos_sev$severidad)
+
+hist(datos_sev$severidad,
+     main = "Distribución de la severidad",
+     xlab = "Coste medio por siniestro",
+     breaks = 50)
+
+```
+Modelo:
+```{r}
+formula_sev <- severidad ~ freq_paiement + langue + type_prof + alimentation +
+  type_territoire + utilisation + presence_alarme + marca_grupo + sexe +
+  age_cat + permis_cat
+
+modelo_gamma <- glm(formula_sev,
+                    family = Gamma(link = "log"),
+                    data = datos_sev)
+
+summary(modelo_gamma)
+```
+El otro modelo con el que podemos comparar es con una lognormal:
+```{r}
+modelo_lognormal <- lm(log(severidad) ~ freq_paiement + langue + type_prof +
+                         alimentation + type_territoire + utilisation +
+                         presence_alarme + marca_grupo + sexe +
+                         age_cat + permis_cat,
+                       data = datos_sev)
+
+summary(modelo_lognormal)
+```
+Comparación de modelos:
+```{r}
+comparacion_sev <- data.frame(
+  Modelo = c("Gamma log-link", "Lognormal"),
+  AIC = c(AIC(modelo_gamma), AIC(modelo_lognormal))
+)
+
+kable(comparacion_sev, digits = 4)
+```
+Observamos que la Lognormal tiene un menor AIC, por lo que se considera un mejor modelo para la severidad.
+Asignamos el modelo ganador:
+```{r}
+if (AIC(modelo_lognormal) < AIC(modelo_gamma)) {
+  modelo_sev_final <- modelo_lognormal
+  nombre_modelo_sev <- "Lognormal"
+} else {
+  modelo_sev_final <- modelo_gamma
+  nombre_modelo_sev <- "Gamma log-link"
+}
+nombre_modelo_sev
+```
+Predicción de severidad del año siguiente
+```{r}
+datos$sev_pred <- predict(modelo_sev_final,
+                          newdata = datos,
+                          type = "response")
+
+summary(datos$sev_pred)
+```
+
+## d) Cálculo de la prima mediante EVPP
+La prima pura esperada se calcula mediante un modelo en dos partes:
+$$E(S_i) = E(N_i) \cdot E(Y_i | N_i > 0),$$
+donde:
+- $E(N_i)$ se obtiene del modelo de frecuencia (Binomial Negativa).
+- $E(Y_i | N_i > 0)$ se obtiene del modelo de severidad (Lognormal).
+
+Aplicando el Expected Value Premium Principle:
+$$P_i = (1 + a)E(S_i),$$
+con $a = 0.1$.
+```{r}
+a <- 0.1
+
+datos$prima_pura <- datos$freq_pred * datos$sev_pred
+datos$prima_evpp <- (1 + a) * datos$prima_pura
+
+summary(datos$prima_pura)
+summary(datos$prima_evpp)
+```
+```{r}
+resultado_primas <- data.frame(
+  id = 1:nrow(datos),
+  freq_paiement = datos$freq_paiement,
+  type_prof = datos$type_prof,
+  type_territoire = datos$type_territoire,
+  utilisation = datos$utilisation,
+  sexe = datos$sexe,
+  age = datos$age,
+  duree_permis = datos$duree_permis,
+  frecuencia_predicha = datos$freq_pred,
+  severidad_predicha = datos$sev_pred,
+  prima_pura = datos$prima_pura,
+  prima_evpp = datos$prima_evpp
+)
+
+kable(head(resultado_primas, 20), digits = 4) 
+```
+Escribimos los resultados en un fichero:
+```{r}
+write.csv2(resultado_primas,
+           file = "primas_practica3.csv",
+           row.names = FALSE)
+```
+
+
