@@ -1,0 +1,202 @@
+---
+title: "Estadística Actuarial Practica 3"
+author: "Leonel Fernando Nabaza Ruibal"
+output:
+  html_document:
+    number_sections: yes
+    toc: no
+    toc_depth: 0
+  pdf_document:
+    toc: no
+  word_document:
+    toc: no
+    toc_depth: '0'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+library(knitr)
+library(MASS)
+```
+
+En ATENEA descarga la base de datos dataFREQ.csv, que contiene los datos siguientes:
+
+```{r, echo=FALSE}
+kable(data.frame(Variables= c("freq_paiement","langue","type_prof","alimentation","type_territoire","utilisation","presence_alarme","marque_voiture","sexe","cout1","cout2","cout3","cout4","nbsin","exposition","cout","age","duree_permis"), Descricion= c("Peridocidad pago de la póliza [annuel, mensuel]","Idioma del asegurado [A=Ingles, F=Francés]","Profesión del asegurado","Hábitos alimenticios","Zona de conducción del asegurado [Urbana, semiurbana, Rural]","Tipo de uso del vehículo","Si el vehículo cuenta o no con alarma","Marca del vehículo","sexo del asegurado","coste del primer siniestro","coste del segundo siniestro","coste del tercer siniestro","coste del cuarto siniestro","número de siniestros","exposición al riesgo en fracciones de año","Suma de los costes de los siniestros","Edad del conductor al inicio del período de cobertura en años","Antiguedad del permiso de conducir")))
+```
+
+Realiza los siguientes cálculos:
+
+a) Haz un descriptivo de los datos.
+
+b) Utilizando GLMs, construye un modelo adecuado para la estimación del número de siniestros en función de las características del asegurado. Podéis usar interacciones así como categorizaciones para las variables cuantitativas.
+
+b) Utilizando GLMs, construye un modelo adecuado para la estimación de la severidad de los siniestros en función de las características del asegurado. Podéis usar interacciones así como categorizaciones para las variables cuantitativas.
+
+c) Calcula para cada asegurado la prima para el año que viene $P_i$. Para su cálculo, se utilizará el Expected Value Premium Principle (EVPP), según el cual, $P_i = E(S_i)+a·E(S_i)$, donde $S_i$ es el coste total de los siniestros de cada asegurado para el año que viene. Podéis asumir un valor $a = 0.1$.
+
+Lectura y preparación de los datos:
+```{r}
+datos <- read.csv2("dataFREQ.csv",
+                   stringsAsFactors = FALSE,
+                   fileEncoding = "latin1")
+
+str(datos)
+summary(datos)
+```
+```{r}
+# Variables cualitativas
+vars_factor <- c("freq_paiement", "langue", "type_prof", "alimentation",
+                 "type_territoire", "utilisation", "presence_alarme",
+                 "marque_voiture", "sexe")
+
+datos[vars_factor] <- lapply(datos[vars_factor], factor)
+
+# Sustituimos NA en costes por 0 para poder hacer descriptivos agregados
+datos$cout_total_0 <- ifelse(is.na(datos$cout), 0, datos$cout)
+
+# Categorización de variables cuantitativas
+datos$age_cat <- cut(datos$age,
+                     breaks = c(17, 25, 35, 45, 55, 65, Inf),
+                     labels = c("18-25", "26-35", "36-45",
+                                "46-55", "56-65", "66+"),
+                     right = TRUE)
+
+datos$permis_cat <- cut(datos$duree_permis,
+                        breaks = c(-Inf, 5, 10, 20, 30, Inf),
+                        labels = c("0-5", "6-10", "11-20",
+                                   "21-30", "31+"),
+                        right = TRUE)
+
+# Agrupamos marcas poco frecuentes para evitar demasiados parámetros
+tabla_marcas <- sort(table(datos$marque_voiture), decreasing = TRUE)
+marcas_principales <- names(tabla_marcas[tabla_marcas >= 300])
+datos$marca_grupo <- as.character(datos$marque_voiture)
+datos$marca_grupo[!(datos$marca_grupo %in% marcas_principales)] <- "Otras"
+datos$marca_grupo <- factor(datos$marca_grupo)
+
+# Evitamos problemas con exposiciones nulas
+summary(datos$exposition)
+datos <- datos[datos$exposition > 0, ]
+```
+
+## a) Descriptivo de los datos
+```{r}
+dim(datos)
+
+# Resumen de variables numéricas principales
+kable(summary(datos[, c("nbsin", "exposition", "cout_total_0",
+                        "age", "duree_permis")]))
+```
+```{r}
+# Distribuciones de algunas variables cualitativas
+kable(data.frame(table(datos$freq_paiement)),
+      col.names = c("Frecuencia de pago", "Frecuencia"))
+
+kable(data.frame(table(datos$type_territoire)),
+      col.names = c("Tipo de territorio", "Frecuencia"))
+
+kable(data.frame(table(datos$utilisation)),
+      col.names = c("Utilización", "Frecuencia"))
+
+kable(data.frame(table(datos$sexe)),
+      col.names = c("Sexo", "Frecuencia"))
+```
+```{r}
+# Distribución del número de siniestros
+kable(data.frame(table(datos$nbsin)),
+      col.names = c("Número de siniestros", "Frecuencia"))
+
+media_nbsin <- mean(datos$nbsin)
+var_nbsin <- var(datos$nbsin)
+
+media_nbsin
+var_nbsin
+```
+
+La variable $\verb|nbsin|$ es una variable de recuento, por lo que es natural utilizar modelos GLM para datos de conteo. En un modelo Poisson se cumple que la media y la varianza coinciden. Si la varianza muestral es claramente superior a la media, puede existir sobredispersión y puede ser conveniente usar una Binomial Negativa o un modelo quasi-Poisson.
+```{r}
+par(mfrow = c(1, 2))
+
+hist(datos$nbsin,
+     main = "Distribución del número de siniestros",
+     xlab = "Número de siniestros",
+     breaks = seq(-0.5, max(datos$nbsin) + 0.5, by = 1))
+
+hist(datos$cout_total_0,
+     main = "Distribución del coste total",
+     xlab = "Coste total",
+     breaks = 50)
+
+par(mfrow = c(1, 1))
+```
+
+## b) GLM para frecuencia de siniestros
+Sea $N_i$ el número de siniestros de la póliza $i$. En el modelo de Poisson con exposición se supone que 
+$$N_i\sim \text{Poisson}(\mu_i),$$
+con $$\mu_i = t_i \exp{(x_i'\beta)}$$
+donde $t_i$ es la exposición al riesgo. Equivalentemente, 
+$$\log{(\mu_i)} = \log{(t_i) + x_i'\beta}$$
+Por tanto, en R se incluye $\verb|offset(log(exposition))|$.
+Modelo:
+```{r}
+formula_freq <- nbsin ~ freq_paiement + langue + type_prof + alimentation +
+  type_territoire + utilisation + presence_alarme + marca_grupo + sexe +
+  age_cat + permis_cat + offset(log(exposition))
+
+modelo_pois <- glm(formula_freq,
+                   family = poisson(link = "log"),
+                   data = datos)
+
+summary(modelo_pois)
+```
+Diagnóstico de sobredispersión:
+```{r}
+disp_deviance <- deviance(modelo_pois) / df.residual(modelo_pois)
+disp_pearson <- sum(residuals(modelo_pois, type = "pearson")^2) /
+  df.residual(modelo_pois)
+
+disp_deviance
+
+disp_pearson
+```
+El valor superior a 1 en la dispersión de Pearson puede sugerir ligera sobredispersión. Por lo tanto, probaremos también con un modelo de distribución Binomial Negativa:
+
+```{r}
+modelo_nb <- glm.nb(formula_freq, data = datos)
+
+summary(modelo_nb)
+```
+y comparamos AIC de ambos modelos:
+```{r}
+comparacion_freq <- data.frame(
+  Modelo = c("Poisson", "Binomial Negativa"),
+  AIC = c(AIC(modelo_pois), AIC(modelo_nb)),
+  Deviance = c(deviance(modelo_pois), deviance(modelo_nb)),
+  GL_residuales = c(df.residual(modelo_pois), df.residual(modelo_nb))
+)
+
+kable(comparacion_freq, digits = 4)
+```
+El modelo Poisson presenta una ligera sobredispersión, ya que la razón de dispersión basada en residuos de Pearson es aproximadamente 1.44.
+
+Aunque esta desviación no es excesiva, la comparación mediante el criterio AIC muestra que el modelo Binomial Negativa proporciona un mejor ajuste a los datos:
+
+\[
+AIC_{NB} = 36559.02 < AIC_{Poisson} = 36672.80.
+\]
+
+Por tanto, el modelo Binomial Negativa se considera más adecuado para modelizar la frecuencia de siniestros, ya que permite incorporar una varianza superior a la media y capturar mejor la heterogeneidad entre asegurados.
+
+Calcular ahora las disperiones para la negative binomial:
+
+```{r}
+disp_deviance_nb <- deviance(modelo_nb) / df.residual(modelo_nb)
+disp_pearson_nb <- sum(residuals(modelo_nb, type = "pearson")^2) / df.residual(modelo_nb)
+disp_deviance_nb
+disp_pearson_nb
+```
+Observamos que obtenemos valores de dispersión más controlados.
