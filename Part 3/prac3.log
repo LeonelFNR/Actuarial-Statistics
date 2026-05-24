@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.9) (preloaded format=pdflatex 2023.9.21)  24 MAY 2026 01:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.9) (preloaded format=pdflatex 2023.9.21)  24 MAY 2026 11:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -630,246 +630,76 @@ n input line 517.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [5] [6{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc} <./prac3_files
 /figure-latex/unnamed-chunk-7-1.pdf>] [7] [8] [9] [10]
-<prac3_files/figure-latex/unnamed-chunk-15-1.pdf, id=81, 469.755pt x 325.215pt>
+<prac3_files/figure-latex/unnamed-chunk-15-1.pdf, id=80, 469.755pt x 325.215pt>
 
 File: prac3_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
 <use prac3_files/figure-latex/unnamed-chunk-15-1.pdf>
 Package pdftex.def Info: prac3_files/figure-latex/unnamed-chunk-15-1.pdf  used 
-on input line 877.
+on input line 887.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 877--879
+Underfull \hbox (badness 10000) in paragraph at lines 887--889
 [][]
  []
 
 [11] [12 <./prac3_files/figure-latex/unnamed-chunk-15-1.pdf>] [13] [14] [15]
-Overfull \hbox (1.27605pt too wide) in paragraph at lines 1181--1182
+Overfull \hbox (1.27605pt too wide) in paragraph at lines 1195--1196
  []\T1/lmr/m/n/10 (-20) id
  []
 
 
-Overfull \hbox (30.20862pt too wide) in paragraph at lines 1183--1184
+Overfull \hbox (30.20862pt too wide) in paragraph at lines 1197--1198
 []\T1/lmr/m/n/10 (-20) freq_paiement  
  []
 
 
-Overfull \hbox (18.04716pt too wide) in paragraph at lines 1185--1186
+Overfull \hbox (18.04716pt too wide) in paragraph at lines 1199--1200
 []\T1/lmr/m/n/10 (-20) type_prof  
  []
 
 
-Overfull \hbox (27.58066pt too wide) in paragraph at lines 1187--1188
+Overfull \hbox (27.58066pt too wide) in paragraph at lines 1201--1202
 []\T1/lmr/m/n/10 (-20) type_territoire  
  []
 
 
-Overfull \hbox (6.26675pt too wide) in paragraph at lines 1191--1192
+Overfull \hbox (6.26675pt too wide) in paragraph at lines 1205--1206
 []\T1/lmr/m/n/10 (-20) sexe  
  []
 
 
-Overfull \hbox (4.9665pt too wide) in paragraph at lines 1193--1194
+Overfull \hbox (4.9665pt too wide) in paragraph at lines 1207--1208
  []\T1/lmr/m/n/10 (-20) age
  []
 
 
-Overfull \hbox (29.60304pt too wide) in paragraph at lines 1195--1196
+Overfull \hbox (29.60304pt too wide) in paragraph at lines 1209--1210
  []\T1/lmr/m/n/10 (-20) duree_permis
  []
 
 
-Overfull \hbox (40.37715pt too wide) in paragraph at lines 1197--1198
+Overfull \hbox (40.37715pt too wide) in paragraph at lines 1211--1212
  []\T1/lmr/m/n/10 (-20) frecuencia_predicha
  []
 
 
-Overfull \hbox (39.72517pt too wide) in paragraph at lines 1199--1200
+Overfull \hbox (39.72517pt too wide) in paragraph at lines 1213--1214
  []\T1/lmr/m/n/10 (-20) severidad_predicha
  []
 
 
-Overfull \hbox (26.78474pt too wide) in paragraph at lines 1201--1202
+Overfull \hbox (26.78474pt too wide) in paragraph at lines 1215--1216
  []\T1/lmr/m/n/10 (-20) prima_pura
  []
 
 
-Overfull \hbox (27.57446pt too wide) in paragraph at lines 1203--1204
+Overfull \hbox (27.57446pt too wide) in paragraph at lines 1217--1218
  []\T1/lmr/m/n/10 (-20) prima_evpp
  []
 
 
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1209--1209
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1223--1223
 []|\T1/lmr/m/n/10 (-20) mensuel|  
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1209--1209
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1209--1209
- []|\T1/lmr/m/n/10 (-20) 29|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1210--1210
- []|\T1/lmr/m/n/10 (-20) 2.3181|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1210--1211
- []|\T1/lmr/m/n/10 (-20) 2.5499|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1211--1211
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1211--1211
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1211--1211
- []|\T1/lmr/m/n/10 (-20) 30|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1212--1212
- []|\T1/lmr/m/n/10 (-20) 2.0359|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1212--1213
- []|\T1/lmr/m/n/10 (-20) 2.2395|
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1213--1213
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1213--1213
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1213--1213
- []|\T1/lmr/m/n/10 (-20) 42|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1214--1214
- []|\T1/lmr/m/n/10 (-20) 0.8947|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1214--1215
- []|\T1/lmr/m/n/10 (-20) 0.9842|
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1215--1215
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1215--1215
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1215--1215
- []|\T1/lmr/m/n/10 (-20) 43|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1216--1216
- []|\T1/lmr/m/n/10 (-20) 0.8947|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1216--1217
- []|\T1/lmr/m/n/10 (-20) 0.9842|
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1217--1217
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1217--1217
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1217--1217
- []|\T1/lmr/m/n/10 (-20) 44|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1218--1218
- []|\T1/lmr/m/n/10 (-20) 0.8947|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1218--1219
- []|\T1/lmr/m/n/10 (-20) 0.9842|
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1219--1219
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1219--1219
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1219--1219
- []|\T1/lmr/m/n/10 (-20) 44|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1220--1220
- []|\T1/lmr/m/n/10 (-20) 0.8947|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1220--1221
- []|\T1/lmr/m/n/10 (-20) 0.9842|
- []
-
-
-Overfull \hbox (19.90286pt too wide) in paragraph at lines 1221--1221
-[]|\T1/lmr/m/n/10 (-20) Technicien|  
- []
-
-
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1221--1221
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
-Overfull \hbox (0.61089pt too wide) in paragraph at lines 1221--1221
- []|\T1/lmr/m/n/10 (-20) 44|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1222--1222
- []|\T1/lmr/m/n/10 (-20) 0.8947|
- []
-
-
-Overfull \hbox (1.95857pt too wide) in paragraph at lines 1222--1223
- []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -878,23 +708,23 @@ Overfull \hbox (19.90286pt too wide) in paragraph at lines 1223--1223
  []
 
 
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1223--1223
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1223--1223
- []|\T1/lmr/m/n/10 (-20) 45|
+ []|\T1/lmr/m/n/10 (-20) 29|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1224--1224
- []|\T1/lmr/m/n/10 (-20) 0.8947|
+ []|\T1/lmr/m/n/10 (-20) 2.3181|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1224--1225
- []|\T1/lmr/m/n/10 (-20) 0.9842|
+ []|\T1/lmr/m/n/10 (-20) 2.5499|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1225--1225
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
  []
 
 
@@ -903,28 +733,18 @@ Overfull \hbox (19.90286pt too wide) in paragraph at lines 1225--1225
  []
 
 
-Overfull \hbox (2.27725pt too wide) in paragraph at lines 1225--1225
-\T1/lmr/m/n/10 (-20) occasionnel|  
- []
-
-
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1225--1225
- []|\T1/lmr/m/n/10 (-20) 46|
+ []|\T1/lmr/m/n/10 (-20) 30|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1226--1226
- []|\T1/lmr/m/n/10 (-20) 0.9647|
+ []|\T1/lmr/m/n/10 (-20) 2.0359|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1226--1227
- []|\T1/lmr/m/n/10 (-20) 1.0611|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1227--1227
- []|\T1/lmr/m/n/10 (-20) 10|
+ []|\T1/lmr/m/n/10 (-20) 2.2395|
  []
 
 
@@ -939,22 +759,17 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1227--1227
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1227--1227
- []|\T1/lmr/m/n/10 (-20) 47|
+ []|\T1/lmr/m/n/10 (-20) 42|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1228--1228
- []|\T1/lmr/m/n/10 (-20) 0.9647|
+ []|\T1/lmr/m/n/10 (-20) 0.8947|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1228--1229
- []|\T1/lmr/m/n/10 (-20) 1.0611|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1229--1229
- []|\T1/lmr/m/n/10 (-20) 11|
+ []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -969,22 +784,17 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1229--1229
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1229--1229
- []|\T1/lmr/m/n/10 (-20) 48|
+ []|\T1/lmr/m/n/10 (-20) 43|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1230--1230
- []|\T1/lmr/m/n/10 (-20) 0.9647|
+ []|\T1/lmr/m/n/10 (-20) 0.8947|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1230--1231
- []|\T1/lmr/m/n/10 (-20) 1.0611|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1231--1231
- []|\T1/lmr/m/n/10 (-20) 12|
+ []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -999,22 +809,17 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1231--1231
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1231--1231
- []|\T1/lmr/m/n/10 (-20) 48|
+ []|\T1/lmr/m/n/10 (-20) 44|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1232--1232
- []|\T1/lmr/m/n/10 (-20) 1.4458|
+ []|\T1/lmr/m/n/10 (-20) 0.8947|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1232--1233
- []|\T1/lmr/m/n/10 (-20) 1.5903|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1233--1233
- []|\T1/lmr/m/n/10 (-20) 13|
+ []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -1029,27 +834,17 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1233--1233
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1233--1233
- []|\T1/lmr/m/n/10 (-20) 50|
+ []|\T1/lmr/m/n/10 (-20) 44|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1234--1234
- []|\T1/lmr/m/n/10 (-20) 1.4458|
+ []|\T1/lmr/m/n/10 (-20) 0.8947|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1234--1235
- []|\T1/lmr/m/n/10 (-20) 1.5903|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1235--1235
- []|\T1/lmr/m/n/10 (-20) 14|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1235--1235
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -1064,27 +859,17 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1235--1235
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1235--1235
- []|\T1/lmr/m/n/10 (-20) 49|
+ []|\T1/lmr/m/n/10 (-20) 44|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1236--1236
- []|\T1/lmr/m/n/10 (-20) 1.5098|
+ []|\T1/lmr/m/n/10 (-20) 0.8947|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1236--1237
- []|\T1/lmr/m/n/10 (-20) 1.6608|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1237--1237
- []|\T1/lmr/m/n/10 (-20) 15|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1237--1237
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -1099,27 +884,17 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1237--1237
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1237--1237
- []|\T1/lmr/m/n/10 (-20) 50|
+ []|\T1/lmr/m/n/10 (-20) 45|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1238--1238
- []|\T1/lmr/m/n/10 (-20) 1.4817|
+ []|\T1/lmr/m/n/10 (-20) 0.8947|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1238--1239
- []|\T1/lmr/m/n/10 (-20) 1.6298|
- []
-
-
-Overfull \hbox (2.90945pt too wide) in paragraph at lines 1239--1239
- []|\T1/lmr/m/n/10 (-20) 16|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1239--1239
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 0.9842|
  []
 
 
@@ -1134,27 +909,22 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1239--1239
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1239--1239
- []|\T1/lmr/m/n/10 (-20) 51|
+ []|\T1/lmr/m/n/10 (-20) 46|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1240--1240
- []|\T1/lmr/m/n/10 (-20) 1.4817|
+ []|\T1/lmr/m/n/10 (-20) 0.9647|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1240--1241
- []|\T1/lmr/m/n/10 (-20) 1.6298|
+ []|\T1/lmr/m/n/10 (-20) 1.0611|
  []
 
 
 Overfull \hbox (2.90945pt too wide) in paragraph at lines 1241--1241
- []|\T1/lmr/m/n/10 (-20) 17|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1241--1241
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 10|
  []
 
 
@@ -1169,27 +939,22 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1241--1241
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1241--1241
- []|\T1/lmr/m/n/10 (-20) 51|
+ []|\T1/lmr/m/n/10 (-20) 47|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1242--1242
- []|\T1/lmr/m/n/10 (-20) 1.4817|
+ []|\T1/lmr/m/n/10 (-20) 0.9647|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1242--1243
- []|\T1/lmr/m/n/10 (-20) 1.6298|
+ []|\T1/lmr/m/n/10 (-20) 1.0611|
  []
 
 
 Overfull \hbox (2.90945pt too wide) in paragraph at lines 1243--1243
- []|\T1/lmr/m/n/10 (-20) 18|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1243--1243
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 11|
  []
 
 
@@ -1204,27 +969,22 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1243--1243
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1243--1243
- []|\T1/lmr/m/n/10 (-20) 52|
+ []|\T1/lmr/m/n/10 (-20) 48|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1244--1244
- []|\T1/lmr/m/n/10 (-20) 2.2210|
+ []|\T1/lmr/m/n/10 (-20) 0.9647|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1244--1245
- []|\T1/lmr/m/n/10 (-20) 2.4431|
+ []|\T1/lmr/m/n/10 (-20) 1.0611|
  []
 
 
 Overfull \hbox (2.90945pt too wide) in paragraph at lines 1245--1245
- []|\T1/lmr/m/n/10 (-20) 19|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1245--1245
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 12|
  []
 
 
@@ -1239,27 +999,22 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1245--1245
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1245--1245
- []|\T1/lmr/m/n/10 (-20) 52|
+ []|\T1/lmr/m/n/10 (-20) 48|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1246--1246
- []|\T1/lmr/m/n/10 (-20) 2.2210|
+ []|\T1/lmr/m/n/10 (-20) 1.4458|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1246--1247
- []|\T1/lmr/m/n/10 (-20) 2.4431|
+ []|\T1/lmr/m/n/10 (-20) 1.5903|
  []
 
 
 Overfull \hbox (2.90945pt too wide) in paragraph at lines 1247--1247
- []|\T1/lmr/m/n/10 (-20) 20|
- []
-
-
-Overfull \hbox (2.20001pt too wide) in paragraph at lines 1247--1247
-[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []|\T1/lmr/m/n/10 (-20) 13|
  []
 
 
@@ -1274,16 +1029,261 @@ Overfull \hbox (2.27725pt too wide) in paragraph at lines 1247--1247
 
 
 Overfull \hbox (0.61089pt too wide) in paragraph at lines 1247--1247
- []|\T1/lmr/m/n/10 (-20) 53|
+ []|\T1/lmr/m/n/10 (-20) 50|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1248--1248
- []|\T1/lmr/m/n/10 (-20) 2.2210|
+ []|\T1/lmr/m/n/10 (-20) 1.4458|
  []
 
 
 Overfull \hbox (1.95857pt too wide) in paragraph at lines 1248--1249
+ []|\T1/lmr/m/n/10 (-20) 1.5903|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1249--1249
+ []|\T1/lmr/m/n/10 (-20) 14|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1249--1249
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1249--1249
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1249--1249
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1249--1249
+ []|\T1/lmr/m/n/10 (-20) 49|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1250--1250
+ []|\T1/lmr/m/n/10 (-20) 1.5098|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1250--1251
+ []|\T1/lmr/m/n/10 (-20) 1.6608|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1251--1251
+ []|\T1/lmr/m/n/10 (-20) 15|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1251--1251
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1251--1251
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1251--1251
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1251--1251
+ []|\T1/lmr/m/n/10 (-20) 50|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1252--1252
+ []|\T1/lmr/m/n/10 (-20) 1.4817|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1252--1253
+ []|\T1/lmr/m/n/10 (-20) 1.6298|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1253--1253
+ []|\T1/lmr/m/n/10 (-20) 16|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1253--1253
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1253--1253
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1253--1253
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1253--1253
+ []|\T1/lmr/m/n/10 (-20) 51|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1254--1254
+ []|\T1/lmr/m/n/10 (-20) 1.4817|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1254--1255
+ []|\T1/lmr/m/n/10 (-20) 1.6298|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1255--1255
+ []|\T1/lmr/m/n/10 (-20) 17|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1255--1255
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1255--1255
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1255--1255
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1255--1255
+ []|\T1/lmr/m/n/10 (-20) 51|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1256--1256
+ []|\T1/lmr/m/n/10 (-20) 1.4817|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1256--1257
+ []|\T1/lmr/m/n/10 (-20) 1.6298|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1257--1257
+ []|\T1/lmr/m/n/10 (-20) 18|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1257--1257
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1257--1257
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1257--1257
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1257--1257
+ []|\T1/lmr/m/n/10 (-20) 52|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1258--1258
+ []|\T1/lmr/m/n/10 (-20) 2.2210|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1258--1259
+ []|\T1/lmr/m/n/10 (-20) 2.4431|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1259--1259
+ []|\T1/lmr/m/n/10 (-20) 19|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1259--1259
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1259--1259
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1259--1259
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1259--1259
+ []|\T1/lmr/m/n/10 (-20) 52|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1260--1260
+ []|\T1/lmr/m/n/10 (-20) 2.2210|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1260--1261
+ []|\T1/lmr/m/n/10 (-20) 2.4431|
+ []
+
+
+Overfull \hbox (2.90945pt too wide) in paragraph at lines 1261--1261
+ []|\T1/lmr/m/n/10 (-20) 20|
+ []
+
+
+Overfull \hbox (2.20001pt too wide) in paragraph at lines 1261--1261
+[]|\T1/lmr/m/n/10 (-20) mensuel|  
+ []
+
+
+Overfull \hbox (19.90286pt too wide) in paragraph at lines 1261--1261
+[]|\T1/lmr/m/n/10 (-20) Technicien|  
+ []
+
+
+Overfull \hbox (2.27725pt too wide) in paragraph at lines 1261--1261
+\T1/lmr/m/n/10 (-20) occasionnel|  
+ []
+
+
+Overfull \hbox (0.61089pt too wide) in paragraph at lines 1261--1261
+ []|\T1/lmr/m/n/10 (-20) 53|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1262--1262
+ []|\T1/lmr/m/n/10 (-20) 2.2210|
+ []
+
+
+Overfull \hbox (1.95857pt too wide) in paragraph at lines 1262--1263
  []|\T1/lmr/m/n/10 (-20) 2.4431|
  []
 
@@ -1296,23 +1296,24 @@ L3 programming layer <2023-08-29>
 Here is how much of TeX's memory you used:
  14417 strings out of 475247
  225549 string characters out of 5767604
- 1971801 words of memory out of 5000000
+ 1972801 words of memory out of 5000000
  35595 multiletter control sequences out of 15000+600000
  608527 words of font info for 114 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 77i,7n,81p,1004b,737s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 77i,7n,81p,1004b,759s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/M
 iKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/pub
 lic/lm/lmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><C:/
 Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/f
 onts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/l
-mr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Program 
-Files/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Program Files/MiKTeX/fonts/typ
-e1/public/lm/lmtk10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.p
-fb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
-Output written on prac3.pdf (17 pages, 304926 bytes).
+mr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr7.pfb><C:/Program Fi
+les/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Program Files/MiKTeX/fonts/type
+1/public/lm/lmsy7.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtk10.pfb
+><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Program Files/Mi
+KTeX/fonts/type1/public/lm/lmtti10.pfb>
+Output written on prac3.pdf (17 pages, 322107 bytes).
 PDF statistics:
- 207 PDF objects out of 1000 (max. 8388607)
+ 212 PDF objects out of 1000 (max. 8388607)
  37 named destinations out of 1000 (max. 500000)
  28723 words of extra memory for PDF output out of 29859 (max. 10000000)
 

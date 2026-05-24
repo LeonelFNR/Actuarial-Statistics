@@ -1,0 +1,244 @@
+
+
+---
+title: "Estadística Actuarial Practica 3 Segunda Parte"
+author: "Leonel Fernando Nabaza Ruibal"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    number_sections: yes
+    toc: no
+    toc_depth: 0
+  word_document:
+    toc: no
+    toc_depth: '0'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+library(knitr)
+library(MASS)
+```
+
+En ATENEA descarga la base de datos dataclaim.csv, que contiene los datos siguientes:
+
+```{r, echo=FALSE}
+kable(data.frame(Variables= c("veh_value","exposure","numclaims","claimcst0","veh_body","veh_age","gender","area","agecat"), Descricion= c("valor del vehículo, en $10,000s","fracción del año con cobertura","número de siniestros durante el período de cobertura","coste total de los siniestros (0 si no los hay)","tipo de vehículo","1 (vehículos más jóvenes), 2, 3, 4 (vehículos más antiguos)","F = femenino, M = masculino","área de circulación: A, B, C, D, E y F","1 (conductor más joven), 2, 3, 4, 5, 6 (conductor más mayor)")))
+```
+
+
+Realiza los siguientes cálculos:
+
+a) Haz un descriptivo de los datos.
+
+b) Ajusta un modelo de regresión de Poisson y otro modelo Binomial Negativo para la frecuencia de siniestralidad. Interpreta los resultados. ¿Cuál te parece más adecuado?
+
+b) Ajusta un modelo de regresión Gamma, Inversa Gausiana y Lognormal a la severidad de los siniestros. Interpreta los resultados. ¿Cuál modelo te parece mejor?
+
+c) Calcula para cada asegurado la prima pura para el año que viene.
+
+Lectura y preparación de los datos:
+```{r}
+datos <- read.csv("dataclaim.csv", stringsAsFactors = FALSE)
+
+str(datos)
+summary(datos)
+
+# Variables categóricas
+vars_factor <- c("veh_body", "veh_age", "gender", "area", "agecat")
+
+datos[vars_factor] <- lapply(datos[vars_factor], factor)
+
+# Eliminamos exposiciones nulas si existen
+
+datos <- subset(datos, exposure > 0)
+
+# Variable de severidad positiva
+
+datos_sev <- subset(datos, numclaims > 0 & claimcst0 > 0)
+
+# Coste medio por siniestro
+
+datos_sev$severity <- datos_sev$claimcst0 / datos_sev$numclaims
+```
+
+## a) Descriptivo de los datos
+```{r}
+dim(datos)
+
+kable(summary(datos[, c("veh_value", "exposure",
+                        "numclaims", "claimcst0")])) 
+kable(data.frame(table(datos$veh_body)),
+      col.names = c("Tipo vehículo", "Frecuencia"))
+
+kable(data.frame(table(datos$veh_age)),
+      col.names = c("Edad vehículo", "Frecuencia"))
+
+kable(data.frame(table(datos$gender)),
+      col.names = c("Sexo", "Frecuencia"))
+
+kable(data.frame(table(datos$area)),
+      col.names = c("Área", "Frecuencia"))
+
+media_freq <- mean(datos$numclaims)
+var_freq <- var(datos$numclaims)
+
+media_freq
+var_freq
+
+```
+La variable $\verb|numClaims|$ representa el número de siniestros y, por tanto, se trata de una variable de conteo.
+
+## b) Modelos de frecuencia
+Proponemos también como en la primer parte un modelo de Poisson ($N_i \sim \text{Poisson}(\mu_i)$, donde $N_i$ es el número de siniestros para la poliza $i$).
+
+```{r}
+formula_freq <- numclaims ~ veh_value + veh_body + veh_age +
+  gender + area + agecat + offset(log(exposure))
+
+modelo_pois <- glm(formula_freq,
+                   family = poisson(link = "log"),
+                   data = datos)
+
+summary(modelo_pois)
+```
+Diagnóstico de sobredispersión:
+```{r}
+disp_dev <- deviance(modelo_pois) / df.residual(modelo_pois)
+
+disp_pearson <- sum(residuals(modelo_pois,
+                              type = "pearson")^2) /
+  df.residual(modelo_pois)
+
+disp_dev
+disp_pearson
+```
+La dispersión de Pearson también es relativemente alta en este caso, por lo tanto, probamos nuevamente con una Binomial Negativa:
+```{r}
+modelo_nb <- glm.nb(formula_freq, data = datos)
+summary(modelo_nb)
+```
+
+Comparación de los modelos:
+```{r}
+comparacion_freq <- data.frame(
+  Modelo = c("Poisson", "Binomial Negativa"),
+  AIC = c(AIC(modelo_pois), AIC(modelo_nb)),
+  Deviance = c(deviance(modelo_pois), deviance(modelo_nb))
+)
+
+kable(comparacion_freq,
+      digits = 4,
+      booktabs = TRUE)
+```
+```{r}
+if (AIC(modelo_nb) < AIC(modelo_pois)) {
+  modelo_freq_final <- modelo_nb
+  nombre_modelo_freq <- "Binomial Negativa"
+} else {
+  modelo_freq_final <- modelo_pois
+  nombre_modelo_freq <- "Poisson"
+}
+
+nombre_modelo_freq
+```
+## c) Modelos de severidad
+Proponemos un modelo Gamma en primera instancia, siguiendo un procedimiento similar a la primera parte:
+
+```{r}
+formula_sev <- severity ~ veh_value + veh_body + veh_age +
+  gender + area + agecat
+
+modelo_gamma <- glm(formula_sev,
+                    family = Gamma(link = "log"),
+                    data = datos_sev)
+
+summary(modelo_gamma)
+```
+y lo comparamaos contra una LogNormal
+```{r}
+modelo_lognormal <- lm(log(severity) ~ veh_value + veh_body +
+                         veh_age + gender + area + agecat,
+                       data = datos_sev)
+
+summary(modelo_lognormal)
+```
+```{r}
+AIC_gamma <- AIC(modelo_gamma)
+AIC_lognormal <- AIC(modelo_lognormal)
+
+comparacion_sev <- data.frame(
+  Modelo = c("Gamma", "Lognormal"),
+  AIC = c(AIC_gamma, AIC_lognormal)
+)
+
+kable(comparacion_sev,
+      digits = 4,
+      booktabs = TRUE)
+
+if (AIC_gamma < AIC_lognormal) {
+  modelo_sev_final <- modelo_gamma
+  nombre_modelo_sev <- "Gamma"
+} else {
+  modelo_sev_final <- modelo_lognormal
+  nombre_modelo_sev <- "Lognormal"
+}
+
+nombre_modelo_sev
+```
+## d) Cálculo de la prima pura
+La prima pura se calcula mediante:
+$$E(S_i) = E(N_i) \cdot E(Y_i)$$
+Predicción de la frecuencia anual
+```{r}
+datos_pred <- datos
+datos_pred$exposure <- 1
+datos$freq_pred <- predict(modelo_freq_final, newdata = datos_pred, type = "response")
+```
+
+Predicción de severidad
+```{r}
+if (nombre_modelo_sev == "Gamma") {
+  datos$sev_pred <- predict(modelo_sev_final,
+                            newdata = datos,
+                            type = "response")
+} else if (nombre_modelo_sev == "Lognormal") {
+  datos$sev_pred <- exp(predict(modelo_sev_final,
+                                newdata = datos))
+}
+```
+
+Prima pura final:
+```{r}
+datos$prima_pura <- datos$freq_pred * datos$sev_pred
+
+summary(datos$prima_pura)
+
+resultado_primas <- data.frame(
+  id = 1:nrow(datos),
+  veh_body = datos$veh_body,
+  veh_age = datos$veh_age,
+  gender = datos$gender,
+  area = datos$area,
+  agecat = datos$agecat,
+  frecuencia_predicha = datos$freq_pred,
+  severidad_predicha = datos$sev_pred,
+  prima_pura = datos$prima_pura
+)
+
+kable(head(resultado_primas, 20),
+      digits = 4,
+      booktabs = TRUE,
+      caption = "Resumen de primas puras") 
+```
+```{r}
+write.csv2(resultado_primas,
+           file = "primas_practica3_primas_pura.csv",
+           row.names = FALSE)
+
+```
+
